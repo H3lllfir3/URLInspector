@@ -1,107 +1,80 @@
-import argparse
-import requests
 import hashlib
-import time
-import sqlite3
-import yaml
+import os
+from urllib.parse import urlparse, urljoin
+import requests
+from bs4 import BeautifulSoup
 
 
-def send_notification(message):
-    # Send notification using Discord webhook or any other method
-    print(message)
+class URL:
+    def __init__(self, url):
+        self.url = self.add_scheme(url)
+        self.save_directory = self.create_save_directory()
 
+    def add_scheme(self, url):
+        parsed_url = urlparse(url)
+        scheme = parsed_url.scheme
 
-def store_data(url, data):
-    conn = sqlite3.connect('data.db')
-    c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS data (url TEXT, status_code INTEGER, content_length INTEGER, title TEXT, js_hash TEXT)")
-    c.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?)", data)
-    conn.commit()
-    conn.close()
+        if not scheme:
+            return "https://" + parsed_url.netloc + parsed_url.path.rstrip("/")
+        
+        return url.rstrip("/")
 
+    def is_relative_url(self, url):
+        parsed_url = urlparse(url)
+        return not bool(parsed_url.netloc)
 
-def check_status_code(url):
-    response = requests.get(url)
-    return response.status_code
+    def create_save_directory(self):
+        base_url = urlparse(self.url).hostname
+        home_directory = os.path.expanduser("~")
+        save_directory = os.path.join(home_directory, ".url_sentry", "js_files", base_url)
+        os.makedirs(save_directory, exist_ok=True)
+        return save_directory
 
+    def check_status_code(self):
+        response = requests.get(self.url)
+        return response.status_code
 
-def check_content_length(url):
-    response = requests.get(url)
-    return len(response.content)
+    def check_content_length(self):
+        response = requests.get(self.url)
+        return len(response.content)
 
+    def check_title(self):
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        return soup.title.text.strip()
 
-def check_title(url):
-    response = requests.get(url)
-    return response.text.split('<title>')[1].split('</title>')[0]
+    def check_word_in_body(self, word):
+        response = requests.get(self.url)
+        return word.lower() in response.text.lower()
 
+    def check_js_files(self, save_directory):
+        response = requests.get(self.url)
+        base_url = urlparse(self.url).hostname
 
-def check_word_in_body(url, word):
-    response = requests.get(url)
-    return word.lower() in response.text.lower()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        js_urls = [script['src'] for script in soup.find_all('script', src=True)]
 
+        base_url_path = f"{base_url}/"
+        base_domain_js_urls = [
+            urljoin(base_url, js_url) if self.is_relative_url(js_url) else js_url
+            for js_url in js_urls
+            if self.is_relative_url(js_url) or base_url in js_url
+        ]
+        
+        absolute_urls = [urljoin(self.url, url) for url in base_domain_js_urls]
+        js_hashes = []
 
-def check_js_file(url):
-    response = requests.get(url)
-    js_urls = []  # Extract JavaScript URLs from response.text
-    for js_url in js_urls:
-        js_response = requests.get(js_url)
-        js_hash = hashlib.md5(js_response.content).hexdigest()
-        # Compare js_hash with the previous hash in the database
-        # If it's different, send a notification and update the stored hash in the database
+        for js_url in absolute_urls:
+            js_response = requests.get(js_url)
+            js_hash = hashlib.md5(js_response.content).hexdigest()
 
+            js_filename = os.path.basename(js_url)
+            js_file_path = os.path.join(save_directory, f"{base_url}-{js_hash}.js")
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='URL Monitoring')
-    parser.add_argument('-u', '--url', help='URL to monitor')
-    parser.add_argument('-list', '--url-list', help='File containing a list of URLs to monitor')
-    parser.add_argument('-status-code', action='store_true', help='Monitor status code')
-    parser.add_argument('-content-length', action='store_true', help='Monitor content length')
-    parser.add_argument('-title', action='store_true', help='Monitor title')
-    parser.add_argument('-body', type=str, help='Word to monitor in the body')
-    parser.add_argument('-js', action='store_true', help='Monitor JavaScript files')
-    parser.add_argument('-time', type=int, default=60, help='Monitoring time interval in minutes')
-    return parser.parse_args()
+            with open(js_file_path, 'wb') as file:
+                file.write(js_response.content)
 
+            js_hashes.append(f'{js_url}|{js_hash}')
 
-def load_config():
-    with open('~/.tomonitor/config.yaml') as f:
-        config = yaml.load(f, Loader=yaml.SafeLoader)
-    return config
+        return ','.join(js_hashes)
 
-
-def main():
-    args = parse_arguments()
-    config = load_config()
-    url = args.url
-    urls = []
-
-    if args.url_list:
-        with open(args.url_list) as f:
-            urls = f.read().splitlines()
-
-    while True:
-        for u in urls:
-            data = [u, None, None, None, None]
-            if args.status_code:
-                data[1] = check_status_code(u)
-            if args.content_length:
-                data[2] = check_content_length(u)
-            if args.title:
-                data[3] = check_title(u)
-            if args.body:
-                if check_word_in_body(u, args.body):
-                    send_notification(f"DATA TIME\nThe word '{args.body}' was found at {u}.")
-            if args.js:
-                check_js_file(u)
-            if data[1:] != [None, None, None, None]:
-                stored_data = retrieve_stored_data(u)
-                if stored_data:
-                    if data[1:] != stored_data[1:]:
-                        # Changes detected, send notification
-                        send_notification(format_data_changes(data, stored_data))
-                store_data(u, data)
-        time.sleep(args.time * 60)
-
-
-if __name__ == '__main__':
-    main()
