@@ -1,0 +1,82 @@
+import json
+import argparse
+import hashlib
+import sqlite3
+from datetime import datetime
+
+
+class UrlData:
+
+    def __init__(self, url=None, title=None, status_code=None, body=None, js_hash=None, content_length=None):
+        self.id = None
+        self.url = url
+        self.title = title
+        self.status_code = status_code
+        self.body = body
+        self.js_hash = js_hash
+        self.content_length = content_length
+        self.added_time = None
+
+    def save(self):
+        conn = sqlite3.connect('data.db')
+        c = conn.cursor()
+        c.execute('''INSERT INTO url_data (url, title, status_code, body, js_hash, content_length, added_time)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))''',
+                  (self.url, self.title, self.status_code, self.body, self.js_hash, self.content_length))
+        self.id = c.lastrowid
+        conn.commit()
+        conn.close()
+
+    @staticmethod
+    def get(url):
+        conn = sqlite3.connect('data.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM url_data WHERE url=?", (url,))
+        result = c.fetchone()
+        conn.close()
+        if result:
+            url_data = UrlData(*result[1:])
+            url_data.id = result[0]
+            url_data.added_time = result[-1]
+            return url_data
+        else:
+            return None
+
+    @staticmethod
+    def get_all():
+        conn = sqlite3.connect('data.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM url_data")
+        rows = c.fetchall()
+        conn.close()
+        url_data_list = []
+        for row in rows:
+            url_data = UrlData(*row[1:-1])
+            url_data.id = row[0]
+            url_data.added_time = row[-1]
+            url_data_list.append(url_data)
+        return json.dumps([ud.__dict__ for ud in url_data_list])
+
+    def update(self):
+        conn = sqlite3.connect('data.db')
+        c = conn.cursor()
+        c.execute('''UPDATE url_data SET url=?, title=?, status_code=?, body=?, js_hash=?, 
+                     content_length=? WHERE id=?''',
+                  (self.url, self.title, self.status_code, self.body, self.js_hash,
+                   self.content_length, self.id))
+        conn.commit()
+        conn.close()
+
+    def remove(self):
+        conn = sqlite3.connect('data.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM url_data WHERE id=?", (self.id,))
+        conn.commit()
+        conn.close()
+
+# url_data = UrlData(url='www.example.com', title='Example', status_code=200, body='Example body',
+#                    js_hash='123abc', js_file='example.js', content_length=100)
+# url_data.save()
+
+# # Remove a UrlData object by URL
+# UrlData.remove('www.example.com')
