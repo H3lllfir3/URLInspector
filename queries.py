@@ -7,7 +7,7 @@ from datetime import datetime
 
 class UrlData:
 
-    def __init__(self, url=None, title=None, status_code=None, body=None, js_hash=None, content_length=None):
+    def __init__(self, url, title=None, status_code=None, body=None, js_hash=None, content_length=None):
         self.id = None
         self.url = url
         self.title = title
@@ -21,7 +21,7 @@ class UrlData:
         conn = sqlite3.connect('data.db')
         c = conn.cursor()
         c.execute('''INSERT INTO url_data (url, title, status_code, body, js_hash, content_length, added_time)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))''',
+                     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))''',
                   (self.url, self.title, self.status_code, self.body, self.js_hash, self.content_length))
         self.id = c.lastrowid
         conn.commit()
@@ -35,7 +35,8 @@ class UrlData:
         result = c.fetchone()
         conn.close()
         if result:
-            url_data = UrlData(*result[1:])
+            url_data = UrlData(url=result[1], title=result[2], status_code=result[3], body=result[4],
+                            js_hash=result[5], content_length=result[6])
             url_data.id = result[0]
             url_data.added_time = result[-1]
             return url_data
@@ -51,7 +52,8 @@ class UrlData:
         conn.close()
         url_data_list = []
         for row in rows:
-            url_data = UrlData(*row[1:-1])
+            url_data = UrlData(url=row[1], title=row[2], status_code=row[3], body=row[4],
+                            js_hash=row[5], content_length=row[6])
             url_data.id = row[0]
             url_data.added_time = row[-1]
             url_data_list.append(url_data)
