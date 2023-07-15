@@ -47,7 +47,7 @@ class URL:
         response = requests.get(self.url)
         return word.lower() in response.text.lower()
 
-    def check_js_files(self, save_directory):
+    def check_js_files(self):
         response = requests.get(self.url)
         base_url = urlparse(self.url).hostname
 
@@ -69,7 +69,7 @@ class URL:
             js_hash = hashlib.md5(js_response.content).hexdigest()
 
             js_filename = os.path.basename(js_url)
-            js_file_path = os.path.join(save_directory, f"{base_url}-{js_hash}.js")
+            js_file_path = os.path.join(self.save_directory, f"{base_url}-{js_hash}.js")
 
             with open(js_file_path, 'wb') as file:
                 file.write(js_response.content)
