@@ -11,7 +11,6 @@ def create_table():
                     status_code INTEGER,
                     body TEXT,
                     js_hash TEXT,
-                    js_file TEXT,
                     content_length INTEGER,
                     added_time TEXT
                 )''')
