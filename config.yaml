@@ -1,2 +1,0 @@
-default_time_interval: 60  # Default monitoring time interval in minutes
-discord_webhook_url: "https://discord.com/webhook/your-webhook-url"  # Discord webhook URL for sending notifications
