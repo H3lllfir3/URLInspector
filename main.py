@@ -83,7 +83,7 @@ def main():
                         if old_hash != new_hash:
                             # If the hash has changed, update the messages dictionary and log the warning
                             messages[data['url']].append(f"JS file for {url} changed.")
-                            logging.warning(f"URL: {url}, Hash: {old_hash} -> {new_hash}")
+                            logging.info(f"URL: {url}, Hash: {old_hash} -> {new_hash}")
                             old_url_hash_dict[url] = new_hash
 
                 # Find items that are present in the new hash dictionary but not in the old one
@@ -93,7 +93,7 @@ def main():
                     logging.warning("Added items:")
                     for key in added_items:
                         messages[data['url']].append(f"JS file {key} added.")
-                        logging.warning(f"[bold red]{key} added![/bold red]")
+                        logging.warning(f"[bold green]{key} added![/bold green]")
                         # Update the old hash dictionary with the added items
                         old_url_hash_dict[key] = new_url_hash_dict.get(key, "")
 
