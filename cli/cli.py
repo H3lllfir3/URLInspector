@@ -75,7 +75,6 @@ def main():
 
             if args.js:
                 url_data.js_hash = domain.check_js_files()
-                print(domain.check_js_files())
 
             if args.content_length:
                 url_data.content_length = domain.check_content_length()
