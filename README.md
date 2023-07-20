@@ -24,7 +24,7 @@ pip install -e .
 To add URL data, use the following command:
 
 ```bash
-python3 cli.py add -u <url> [options]
+url-sentry add -u <url> [options]
 ```
 
 Available options:
@@ -35,9 +35,9 @@ Available options:
 
 Examples:
 ```bash
-python3 cli.py add -u h3llfir3.xyz -content-length
-python3 cli.py add -u h3llfir3.xyz -title
-python3 cli.py add -u h3llfir3.xyz -status-code -js
+url-sentry add -u h3llfir3.xyz -content-length
+url-sentry add -u h3llfir3.xyz -title
+url-sentry add -u h3llfir3.xyz -status-code -js
 ```
 
 ### Remove URL Data
@@ -45,12 +45,12 @@ python3 cli.py add -u h3llfir3.xyz -status-code -js
 To remove URL data, use the following command:
 
 ```bash
-python3 cli.py remove -u <url>
+url-sentry remove -u <url>
 ```
 
 Example:
 ```bash
-python3 cli.py remove -u h3llfir3.xyz
+url-sentry remove -u h3llfir3.xyz
 ```
 
 ### View Logs
@@ -58,7 +58,7 @@ python3 cli.py remove -u h3llfir3.xyz
 To view the logs, use the following command:
 
 ```bash
-python3 cli.py -logs
+url-sentry -logs
 ```
 
 ### View All Records
@@ -66,7 +66,7 @@ python3 cli.py -logs
 To view all URL records, use the following command:
 
 ```bash
-python3 cli.py -subs | jq
+url-sentry -subs | jq
 ```
 
 The output will be formatted using `jq` for better readability.
