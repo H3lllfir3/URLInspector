@@ -17,6 +17,23 @@ cd url-data-management-cli
 pip install -e .
 ```
 
+3. Scheduling `main.py` Using a Cron Job:
+
+a. Open the crontab for editing:
+Run the following command to open the crontab for editing:
+
+```bash
+crontab -e
+```
+b. Add the cron job to run main.py every hour
+
+Add the following line at the end of the crontab file:
+
+```bash
+0 * * * * /path/to/python /path/to/main.py
+```
+Make sure to replace /path/to/python with the absolute path to your Python executable and /path/to/main.py with the absolute path to your main.py file.
+
 ## Usage
 
 ### Add URL Data
