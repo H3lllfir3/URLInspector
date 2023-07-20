@@ -1,10 +1,14 @@
 import logging
 import json
-import typer
-from rich import print
-from queries import UrlData
-from url_sentry import URL
 from collections import defaultdict
+
+from cli.queries import UrlData
+from cli.url_sentry import URL
+from bot import DiscordWebhook
+
+from rich import print
+from decouple import config
+
 
 # Set up logging configuration
 logging.basicConfig(
@@ -14,7 +18,8 @@ logging.basicConfig(
 )
 
 # Create a defaultdict to store messages for each URL
-messages = defaultdict(list)
+messages = []
+webhook_url = config('DISCORD_WEBHOOK_URL')
 
 def main():
     # Load all records from JSON format
@@ -34,7 +39,7 @@ def main():
                 status_code = domain.check_status_code()
                 if status_code != url_data.status_code:
                     # If the status code changed, update the messages dictionary and log the warning
-                    messages[data['url']].append(f"Status code for {data['url']} changed from {url_data.status_code} to {status_code}")
+                    messages.append(f"Status code changed for {data['url']} from {url_data.status_code} to {status_code}")
                     logging.warning(f"Status code changed for {data['url']}")
                     url_data.status_code = status_code
 
@@ -44,7 +49,7 @@ def main():
                 title = domain.check_title()
                 if title != url_data.title:
                     # If the title changed, update the messages dictionary and log the warning
-                    messages[data['url']].append(f"Title changed for {data['url']} from {url_data.title} to {title}")
+                    messages.append(f"Title changed for {data['url']} from {url_data.title} to {title}")
                     logging.warning(f"Title changed for {data['url']}")
                     url_data.title = title
 
@@ -53,7 +58,7 @@ def main():
                 # Check if the specified word is found in the body of the URL
                 if domain.check_word_in_body(data['body']):
                     # If the word is found, update the messages dictionary and log the warning
-                    messages[data['url']].append(f"Word '{data['body']}' found in body")
+                    messages.append(f"Word '{data['body']}' found in body on {data['url']}")
                     logging.warning(f"Word '{data['body']}' found in body for {data['url']}")
                     url_data.body = data['body']
 
@@ -63,7 +68,7 @@ def main():
                 content_length = domain.check_content_length()
                 if content_length != url_data.content_length:
                     # If the content length changed, update the messages dictionary and log the warning
-                    messages[data['url']].append(f"Content length changed from {url_data.content_length} to {content_length}")
+                    messages.append(f"Content length changed for {data['url']} from {url_data.content_length} to {content_length}")
                     logging.warning(f"Content length changed for {data['url']}")
                     url_data.content_length = content_length
 
@@ -82,7 +87,7 @@ def main():
                         new_hash = new_url_hash_dict[url]
                         if old_hash != new_hash:
                             # If the hash has changed, update the messages dictionary and log the warning
-                            messages[data['url']].append(f"JS file for {url} changed.")
+                            messages.append(f"JS file for {url} changed.")
                             logging.info(f"URL: {url}, Hash: {old_hash} -> {new_hash}")
                             old_url_hash_dict[url] = new_hash
 
@@ -92,7 +97,7 @@ def main():
                     # If there are added items, update the messages dictionary and log the warning
                     logging.warning("Added items:")
                     for key in added_items:
-                        messages[data['url']].append(f"JS file {key} added.")
+                        messages.append(f"JS file for {key} added.")
                         logging.warning(f"[bold green]{key} added![/bold green]")
                         # Update the old hash dictionary with the added items
                         old_url_hash_dict[key] = new_url_hash_dict.get(key, "")
@@ -104,7 +109,7 @@ def main():
                     logging.warning("[bold red]Removed items:[/bold red]")
                     keys_to_remove = []
                     for key in removed_items:
-                        messages[data['url']].append(f"JS file {key} removed.")
+                        messages.append(f"JS file removed at {key}")
                         logging.warning(f"URL: {key}, Hash: {old_url_hash_dict[key]}")
                         keys_to_remove.append(key)
 
@@ -118,9 +123,16 @@ def main():
             # Save the updated url_data
             url_data.update()
 
-    for url, message in messages.items():
-        print(f"{url}: {message}")
+    discord = DiscordWebhook(webhook_url)
+
+    chunk_size = 20
+    # Sending messages in batches to avoid Discord webhook rate limit.
+    for idx in range(0, len(messages), chunk_size):
+        chunk_messages = messages[idx:idx + chunk_size]
+        combined_message = "\n".join(chunk_messages)
+        discord.send_message(combined_message)
 
 
 if __name__ == '__main__':
-    typer.run(main)
+    main()
+
