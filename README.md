@@ -1,4 +1,4 @@
-# URL Data Management CLI
+# URL Sentry - URL Monitoring and Management CLI
 
 This is a Python CLI tool for managing URL data, including status code, title, JS files, content length, and more. It allows you to add, remove, and view URL data in a simple and convenient way.
 
