@@ -71,10 +71,21 @@ url-sentry -subs | jq
 
 The output will be formatted using `jq` for better readability.
 
+### Setting Discord Webhook
+
+To enable notifications for important events, you need to set up a Discord webhook URL. Store your Discord webhook URL in the `.env` file at the root of the project as follows:
+
+```plaintext
+DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+```
+
+The CLI will read this URL from the environment variable and use it to send notifications.
+
 ## Dependencies
 
 - `rich`: A library for beautiful and interactive terminal output.
 - `requests`: A library for making HTTP requests.
+- `decouple`: A library to get environment variables.
 
 ## Contributing
 
@@ -87,4 +98,5 @@ This project is licensed under the [MIT License](LICENSE).
 Feel free to use, modify, and distribute this code for personal and commercial use.
 
 ---
-With this README.md, you provide an overview of your URL Data Management CLI, its usage, and how to get started. Customize the installation and usage instructions based on your specific implementation details. Make sure to update the `<url>` placeholder with appropriate URLs and replace `your_username` with your GitHub username in the installation section.
+
+With this README.md, you provide an overview of your URL Data Management CLI, its usage, and how to get started. Customize the installation and usage instructions based on your specific implementation details. Make sure to update the `<url>` placeholder with appropriate URLs, replace `your_username` with your GitHub username in the installation section, and inform users to set up their Discord webhook URL in the `.env` file.
