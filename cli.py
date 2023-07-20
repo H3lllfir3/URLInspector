@@ -5,6 +5,8 @@ import logging
 from queries import UrlData
 from url_sentry import URL
 
+from rich import print
+
 
 # Configure the logging
 logging.basicConfig(
@@ -87,3 +89,9 @@ elif args.action == 'remove':
 if args.subs:
     all_records_json = UrlData.get_all()
     print(all_records_json)
+
+if args.logs:
+    with open('log.txt', 'r') as file:
+        data = file.readlines()
+        for line in data:
+            print(line.strip())
