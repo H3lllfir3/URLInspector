@@ -1,8 +1,12 @@
+import os
 import sqlite3
 
 
+HOME = os.path.expanduser("~")
+DB_PATH = os.path.join(HOME,'.url_sentry', 'data.db')
+
 def create_table():
-    conn = sqlite3.connect('data.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS url_data (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +22,7 @@ def create_table():
     conn.close()
 
 def check_and_create_table():
-    conn = sqlite3.connect('data.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='url_data'")
     if c.fetchone()[0] == 0:

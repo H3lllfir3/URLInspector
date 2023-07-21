@@ -9,6 +9,9 @@ class URL:
     def __init__(self, url):
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
+        self.BACK_LIST = [
+            'jquery',
+        ]
 
     def add_scheme(self, url):
         parsed_url = urlparse(url)
@@ -65,16 +68,18 @@ class URL:
         js_hashes = []
 
         for js_url in absolute_urls:
-            js_response = requests.get(js_url)
-            js_hash = hashlib.md5(js_response.content).hexdigest()
 
-            js_filename = os.path.basename(js_url)
-            js_file_path = os.path.join(self.save_directory, f"{base_url}-{js_hash}.js")
+            if any(blacklisted in js_url for blacklisted in self.BACK_LIST):
+                js_response = requests.get(js_url)
+                js_hash = hashlib.md5(js_response.content).hexdigest()
 
-            with open(js_file_path, 'wb') as file:
-                file.write(js_response.content)
+                js_filename = os.path.basename(js_url)
+                js_file_path = os.path.join(self.save_directory, f"{base_url}-{js_hash}.js")
 
-            js_hashes.append(f'{js_url}|{js_hash}')
+                with open(js_file_path, 'wb') as file:
+                    file.write(js_response.content)
+
+                js_hashes.append(f'{js_url}|{js_hash}')
 
         return ','.join(js_hashes)
 
