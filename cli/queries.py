@@ -1,3 +1,4 @@
+import os
 import json
 import argparse
 import hashlib
@@ -6,6 +7,9 @@ from datetime import datetime
 
 from .database import check_and_create_table
 
+
+HOME = os.path.expanduser("~")
+DB_PATH = os.path.join(HOME,'.url_sentry', 'data.db')
 
 class UrlData:
 
@@ -20,7 +24,7 @@ class UrlData:
         self.added_time = None
 
     def save(self):
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute('''INSERT INTO url_data (url, title, status_code, body, js_hash, content_length, added_time)
                      VALUES (?, ?, ?, ?, ?, ?, datetime('now'))''',
@@ -31,7 +35,7 @@ class UrlData:
 
     @staticmethod
     def get(url):
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("SELECT * FROM url_data WHERE url=?", (url,))
         result = c.fetchone()
@@ -47,7 +51,7 @@ class UrlData:
 
     @staticmethod
     def get_all():
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("SELECT * FROM url_data")
         rows = c.fetchall()
@@ -62,7 +66,7 @@ class UrlData:
         return json.dumps([ud.__dict__ for ud in url_data_list])
 
     def update(self):
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute('''UPDATE url_data SET url=?, title=?, status_code=?, body=?, js_hash=?, 
                      content_length=? WHERE id=?''',
@@ -72,7 +76,7 @@ class UrlData:
         conn.close()
 
     def remove(self):
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("DELETE FROM url_data WHERE id=?", (self.id,))
         conn.commit()
