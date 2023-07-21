@@ -40,12 +40,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.logs:
-        cli_logger.setLevel(logging.WARNING)
-        log_file_handler = logging.FileHandler('log.txt')
-        cli_logger.addHandler(log_file_handler)
-
-    elif args.action == 'add':
+    if args.action == 'add':
 
         url_data = UrlData.get(args.url)
         if url_data:
