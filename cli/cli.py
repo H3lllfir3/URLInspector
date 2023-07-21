@@ -10,9 +10,8 @@ from cli.url_sentry import URL
 from rich import print
 
 
-
 def main():
-    """Manage URL Data monitorin using CLI."""
+    """Manage URL Data monitoring using CLI."""
     # Configure the logging
     logging.basicConfig(
         level=logging.WARNING,
@@ -25,10 +24,10 @@ def main():
     console_handler = logging.StreamHandler()
     cli_logger.addHandler(console_handler)
 
-
     parser = argparse.ArgumentParser(description='URL Data Management')
     parser.add_argument('action', nargs='?', choices=['add', 'remove'], help='Action to perform: add or remove')
     parser.add_argument('-u', '--url', help='URL of the data')
+    parser.add_argument('-l', '--list', help='Path to a file containing a list of URLs')
     parser.add_argument('-status-code', action='store_true', help='Include status code')
     parser.add_argument('-title', action='store_true', help='Include title')
     parser.add_argument('-js', action='store_true', help='Include JS')
@@ -37,53 +36,80 @@ def main():
     parser.add_argument('-body', action='store_true', help='Content of the body')
     parser.add_argument('-logs', action='store_true', help='Show logs')
 
-
     args = parser.parse_args()
 
     if args.action == 'add':
+        if args.list:
+            with open(args.list, 'r') as file:
+                urls = file.readlines()
+            urls = [url.strip() for url in urls]
 
-        url_data = UrlData.get(args.url)
-        if url_data:
-            if args.status_code:
-                url_data.status_code = URL(args.url).check_status_code()
+            for url in urls:
+                url_data = UrlData.get(url)
+                if url_data:
+                    if args.status_code:
+                        url_data.status_code = URL(url).check_status_code()
+                    if args.title:
+                        url_data.title = URL(url).check_title()
+                    if args.js:
+                        url_data.js_hash = URL(url).check_js_files()
+                    if args.content_length:
+                        url_data.content_length = URL(url).check_content_length()
+                    url_data.update()
+                    print(f'Data for URL {url} updated successfully!')
+                else:
+                    url_data = UrlData(url=url)
+                    domain = URL(url)
+                    if args.status_code:
+                        url_data.status_code = domain.check_status_code()
+                    if args.title:
+                        url_data.title = domain.check_title()
+                    if args.js:
+                        url_data.js_hash = domain.check_js_files()
+                    if args.content_length:
+                        url_data.content_length = domain.check_content_length()
+                    url_data.save()
+                    print(f'Data for URL {url} added successfully!')
 
-            if args.title:
-                url_data.title = URL(args.url).check_title()
-
-            if args.js:
-                url_data.js_hash = URL(args.url).check_js_files()
-
-            if args.content_length:
-                url_data.content_length = URL(args.url).check_content_length()
-
-            url_data.update()
-            print('Data updated successfully!')
+        elif args.url:
+            url_data = UrlData.get(args.url)
+            if url_data:
+                if args.status_code:
+                    url_data.status_code = URL(args.url).check_status_code()
+                if args.title:
+                    url_data.title = URL(args.url).check_title()
+                if args.js:
+                    url_data.js_hash = URL(args.url).check_js_files()
+                if args.content_length:
+                    url_data.content_length = URL(args.url).check_content_length()
+                url_data.update()
+                print(f'Data for URL {args.url} updated successfully!')
+            else:
+                url_data = UrlData(url=args.url)
+                domain = URL(args.url)
+                if args.status_code:
+                    url_data.status_code = domain.check_status_code()
+                if args.title:
+                    url_data.title = domain.check_title()
+                if args.js:
+                    url_data.js_hash = domain.check_js_files()
+                if args.content_length:
+                    url_data.content_length = domain.check_content_length()
+                url_data.save()
+                print(f'Data for URL {args.url} added successfully!')
         else:
-            url_data = UrlData(url=args.url)
-            domain = URL(args.url)
-
-            if args.status_code:
-                url_data.status_code = domain.check_status_code()
-
-            if args.title:
-                url_data.title = domain.check_title()
-
-            if args.js:
-                url_data.js_hash = domain.check_js_files()
-
-            if args.content_length:
-                url_data.content_length = domain.check_content_length()
-
-            url_data.save()
-            print('Data added successfully!')
+            print("Error: Please specify either a single URL using '-u' or a file containing a list of URLs using '-l'.")
 
     elif args.action == 'remove':
-        url_data = UrlData.get(args.url)
-        if url_data:
-            url_data.remove()
-            print('Data removed successfully!')
+        if args.url:
+            url_data = UrlData.get(args.url)
+            if url_data:
+                url_data.remove()
+                print(f'Data for URL {args.url} removed successfully!')
+            else:
+                print(f'Data for URL {args.url} not found!')
         else:
-            print('Data not found!')
+            print("Error: Please specify a URL using '-u' to remove its data.")
 
     # Additional functionality for getting all records
     elif args.subs:
