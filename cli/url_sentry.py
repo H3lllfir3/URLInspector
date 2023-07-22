@@ -34,7 +34,7 @@ class URL:
         return save_directory
 
     def check_status_code(self):
-        response = requests.get(self.url)
+        response = requests.get(self.url, verify=False)
         return response.status_code
 
     def check_content_length(self):
