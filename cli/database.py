@@ -2,8 +2,13 @@ import os
 import sqlite3
 
 
-HOME = os.path.expanduser("~")
-DB_PATH = os.path.join(HOME,'.url_sentry', 'data.db')
+DB_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
+
+os.makedirs(DB_DIR, exist_ok=True)
+
+# Set the absolute path for the database file
+DB_FILE = 'data.db'
+DB_PATH = os.path.join(DB_DIR, DB_FILE)
 
 def create_table():
     conn = sqlite3.connect(DB_PATH)
