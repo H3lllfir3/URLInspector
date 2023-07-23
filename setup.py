@@ -25,7 +25,7 @@ setup(
     install_requires=[
         'rich',
         'requests',
-        'python-decouple',
+        'python-dotenv',
         'python-crontab',
         'tldextract',
         'beautifulsoup4'
