@@ -6,6 +6,7 @@ from cli.queries import UrlData
 from cli.url_sentry import URL
 from bot import DiscordWebhook
 
+from crontab import CronTab
 from rich import print
 from decouple import config
 
@@ -133,6 +134,29 @@ def main():
         discord.send_message(combined_message)
 
 
+def add_cron_job(script_path):
+
+    cron = CronTab(user=True)
+
+    python_path = "/usr/bin/python3"  # Change this to the path of your Python executable
+    job = cron.new(command=f'{python_path} {script_path}', comment='url-sentry')
+    job.setall('0 * * * *')  # This runs the job at the start of every hour
+
+    # Write the job to the cron table
+    cron.write()
+
+def schedule_cron_job():
+    try:
+        script_path = os.path.abspath(__file__)
+        add_cron_job(script_path)
+
+        logging.info("[bold green]Cron job added successfully![/bold green]")
+    except Exception as e:
+        print()
+        logging.warning(f"[bold red]Error adding cron job:[/bold red] {str(e)}")
+
+
 if __name__ == '__main__':
+    schedule_cron_job()
     main()
 

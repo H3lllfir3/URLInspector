@@ -7,7 +7,8 @@ setup(
     install_requires=[
         'rich',
         'requests',
-        'python-decouple'
+        'python-decouple',
+        'python-crontab',
     ],
     entry_points={
         'console_scripts': [
