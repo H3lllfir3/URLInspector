@@ -26,7 +26,9 @@ setup(
         'rich',
         'requests',
         'python-decouple',
-        'python-crontab'
+        'python-crontab',
+        'tldextract',
+        'beautifulsoup4'
     ],
     entry_points={
         'console_scripts': [
