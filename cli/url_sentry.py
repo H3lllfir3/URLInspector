@@ -1,8 +1,12 @@
 import hashlib
 import os
 from urllib.parse import urlparse, urljoin
+import re
+
 import requests
 from bs4 import BeautifulSoup
+import tldextract
+
 
 
 class URL:
@@ -32,6 +36,10 @@ class URL:
         """
         parsed_url = urlparse(url)
         return not bool(parsed_url.netloc)
+
+    def extract_site_name(self, url):
+        extracted = tldextract.extract(url)
+        return extracted.domain
 
     def create_save_directory(self):
         """
@@ -86,19 +94,25 @@ class URL:
         base_url = urlparse(self.url).hostname
 
         soup = BeautifulSoup(self.response.text, 'html.parser')
-        js_urls = [script['src'] for script in soup.find_all('script', src=True)]
+        js_tags = [script['src'] for script in soup.find_all('script', src=True)]
 
-        base_url_path = f"{base_url}/"
+        js_modulepreload_links = soup.find_all('link', rel='modulepreload', href=re.compile(r'\.js$'))
+        js_links = [link['href'] for link in js_modulepreload_links]
+
+        all_js = js_links + js_tags
+
+        base_url_path = f"{self.url}/"
+        site_name = self.extract_site_name(self.url)
         base_domain_js_urls = [
-            urljoin(base_url, js_url) if self.is_relative_url(js_url) else js_url
-            for js_url in js_urls
-            if self.is_relative_url(js_url) or base_url in js_url
+            urljoin(base_url_path, js_url) if self.is_relative_url(js_url) else js_url
+            for js_url in all_js
+            if self.is_relative_url(js_url) or site_name in js_url
         ]
 
         js_hashes = []
         with requests.Session() as session:
             for js_url in base_domain_js_urls:
-                if any(blacklisted in js_url for blacklisted in self.BACK_LIST):
+                if not any(blacklisted in js_url for blacklisted in self.BACK_LIST):
                     try:
                         js_response = session.get(js_url)
                         js_response.raise_for_status()  # Check for HTTP status code other than 200
