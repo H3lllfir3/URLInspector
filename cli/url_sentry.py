@@ -108,6 +108,8 @@ class URL:
             for js_url in all_js
             if self.is_relative_url(js_url) or site_name in js_url
         ]
+        
+        base_domain_js_urls = [url.replace("//", "https://") if url.startswith("//") else url for url in base_domain_js_urls]
 
         js_hashes = []
         with requests.Session() as session:
