@@ -7,7 +7,6 @@ from cli.queries import UrlData
 from cli.url_sentry import URL
 from bot import DiscordWebhook
 
-from crontab import CronTab
 from rich import print
 from dotenv import load_dotenv
 
@@ -140,30 +139,7 @@ def send_discord_messages():
         discord.send_message(combined_message)
 
 
-def add_cron_job(script_path):
-    """Add a cron job to run the script periodically."""
-    cron = CronTab(user=True)
-
-    python_path = "/usr/bin/python3"  # Change this to the path of your Python executable
-    job = cron.new(command=f'{python_path} {script_path}', comment='url-sentry')
-    job.setall('0 * * * *')  # This runs the job at the start of every hour
-
-    try:
-        cron.write()
-        logging.info("[bold green]Cron job added successfully![/bold green]")
-    except Exception as e:
-        print()
-        logging.warning(f"[bold red]Error adding cron job:[/bold red] {str(e)}")
-
-
-def schedule_cron_job():
-    try:
-        script_path = os.path.abspath(__file__)
-        add_cron_job(script_path)
-    except Exception as e:
-        logging.warning(f"Error adding cron job: {str(e)}")
-
 
 if __name__ == '__main__':
-    schedule_cron_job()
+
     main()
