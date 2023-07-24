@@ -1,20 +1,27 @@
 import os
 from setuptools import setup
 from setuptools.command.install import install
-from crontab import CronTab
 
 
 class CustomInstallCommand(install):
     def run(self):
-        # Call the original install command first
+    
         install.run(self)
 
-        # Add the cronjob
+        from crontab import CronTab
+
+        # Get the path of main.py relative to the setup.py file
+        script_path = os.path.join(os.path.dirname(__file__), "main.py")
+        if not os.path.isfile(script_path):
+            raise FileNotFoundError(f"main.py not found at '{script_path}'")
+
+
         cron = CronTab(user=True)
         python_path = "/usr/bin/python3"  # Change this to the path of your Python executable
         job = cron.new(command=f'{python_path} {script_path}')
-        job.hour.every(interval_hours)
+        job.hour.every(1)  # Replace 1 with the desired interval in hours (e.g., 2, 3, etc.)
         cron.write()
+
 
 setup(
     name='URL_sentry',
@@ -26,14 +33,14 @@ setup(
         'python-dotenv',
         'python-crontab',
         'tldextract',
-        'beautifulsoup4'
+        'beautifulsoup4',
     ],
     entry_points={
         'console_scripts': [
             'url-sentry=cli.cli:main',
         ],
     },
-    cmdclass={
-        'install': CustomInstallCommand,
-    }
+    # cmdclass={
+    #     'install': CustomInstallCommand,
+    # }
 )
