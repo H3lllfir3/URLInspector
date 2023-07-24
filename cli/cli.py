@@ -3,6 +3,7 @@
 import json
 import argparse
 import logging
+import os
 
 from cli.queries import UrlData
 from cli.url_sentry import URL
