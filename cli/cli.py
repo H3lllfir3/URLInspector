@@ -35,24 +35,21 @@ def main():
     parser.add_argument('-content-length', action='store_true', help='Include content length')
     parser.add_argument('-body', action='store_true', help='Content of the body')
     parser.add_argument('-logs', action='store_true', help='Show logs')
-    parser.add_argument('-set-hook', metavar='WEBHOOK_URL', help='Set webhook URL for Discord integration')
+    parser.add_argument('--set_hook', help='Webhook URL')
 
 
     args = parser.parse_args()
 
-    if args.action == 'set-hook':
-        if not args.set_hook:
-            print("Error: Please provide a webhook URL using '-set-hook WEBHOOK_URL'")
-        else:
-            webhook_url = args.set_hook.strip()
+    if args.set_hook:
+        webhook_url = args.set_hook.strip()
 
-            ENV_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
-            ENV_FILE = '.env'
-            ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)
+        ENV_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
+        ENV_FILE = '.env'
+        ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)
 
-            with open(ENV_PATH, 'w') as env_file:
-                env_file.write(f"DISCORD_WEBHOOK_URL={webhook_url}\n")
-            print("Webhook URL set successfully!")
+        with open(ENV_PATH, 'w') as env_file:
+            env_file.write(f"DISCORD_WEBHOOK_URL={webhook_url}\n")
+        print("Webhook URL set successfully!")
 
     elif args.action == 'add':
         if args.list:

@@ -32,11 +32,9 @@ def main():
     # Load all records from JSON format
     all_records_json = json.loads(UrlData.get_all())
     
-    # Iterate over each record and process it
     for record in all_records_json:
         process_record(record)
 
-    # Send messages to the Discord webhook
     send_discord_messages()
 
 
