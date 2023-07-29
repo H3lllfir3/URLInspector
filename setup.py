@@ -40,7 +40,7 @@ setup(
             'url-sentry=cli.cli:main',
         ],
     },
-    # cmdclass={
-    #     'install': CustomInstallCommand,
-    # }
+    cmdclass={
+        'install': CustomInstallCommand,
+    }
 )
