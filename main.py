@@ -2,6 +2,7 @@ import logging
 import json
 import os
 from collections import defaultdict
+from datetime import datetime
 
 from cli.queries import UrlData
 from cli.url_sentry import URL
@@ -116,7 +117,20 @@ def check_js_hash_change(data, domain, url_data):
             logging.warning("[bold red]Removed items:[/bold red]")
             keys_to_remove = []
             for key in removed_items:
-                messages.append(f"JS file removed at {key}")
+                msg = {
+                    "content": ":x:   **JS file removed at**!",
+                    "embeds": [
+                        {
+                        "title": str(key),
+                        "color": null,
+                        "timestamp": datetime.now().strftime('%Y%m%d-%H%M%S')
+                        }
+                    ],
+                    "username": "UrlSentry :eye:",
+                    "avatar_url": "https://github.com/zi-gax/Hunt/assets/67065043/e844e723-79c9-4913-b101-7a59d8d3eabe",
+                    "attachments": []
+                    }
+                messages.append(msg)
                 logging.warning(f"URL: {key}, Hash: {old_url_hash_dict[key]}")
                 keys_to_remove.append(key)
 
@@ -132,11 +146,8 @@ def send_discord_messages():
     webhook_url = os.environ.get('DISCORD_WEBHOOK_URL')
     discord = DiscordWebhook(webhook_url)
 
-    chunk_size = 20
-    for idx in range(0, len(messages), chunk_size):
-        chunk_messages = messages[idx:idx + chunk_size]
-        combined_message = "\n".join(chunk_messages)
-        discord.send_message(combined_message)
+    for msg in messages:
+        discord.send_message(msg)
 
 
 
