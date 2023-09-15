@@ -1,6 +1,6 @@
-# URL Sentry - URL Monitoring and Management CLI
+# URL Inspector - URL Monitoring and Management CLI
 
-- "URL Sentry" is a Python CLI tool for monitoring URL data, including status code, title, JS files, and content length.
+- "URL Inspector" is a Python CLI tool for monitoring URL data, including status code, title, JS files, and content length.
 - It allows users to add, remove, and view URL data in a simple and convenient way.
 
 ### Installation
@@ -8,7 +8,7 @@
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/H3lllfir3/URL_Sentry.git
+git clone https://github.com/H3lllfir3/URLInspector.git
 cd URL_Sentry
 ```
 
