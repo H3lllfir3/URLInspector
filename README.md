@@ -9,7 +9,7 @@
 
 ```bash
 git clone https://github.com/H3lllfir3/URLInspector.git
-cd URL_Sentry
+cd URLInspector
 ```
 
 2. Install the CLI globally:

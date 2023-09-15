@@ -5,14 +5,14 @@ from collections import defaultdict
 from datetime import datetime
 
 from cli.queries import UrlData
-from cli.url_sentry import URLInspector
+from cli.urlinspector import URLInspector
 from bot import DiscordWebhook
 
 from rich import print
 from dotenv import load_dotenv
 
 
-ENV_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
+ENV_DIR = os.path.join(os.path.expanduser("~"), '.urlinspector')
 LOG_FILE = os.path.join(ENV_DIR, 'log.txt')
 
 logging.basicConfig(
@@ -23,7 +23,7 @@ logging.basicConfig(
 
 messages = []
 
-ENV_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
+ENV_DIR = os.path.join(os.path.expanduser("~"), '.urlinspector')
 ENV_FILE = '.env'
 ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)  # Replace with the actual path to your .env file
 load_dotenv(ENV_PATH)
