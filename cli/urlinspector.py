@@ -47,7 +47,7 @@ class URLInspector:
         """
         base_url = urlparse(self.url).hostname
         home_directory = os.path.expanduser("~")
-        save_directory = os.path.join(home_directory, ".url_sentry", "js_files", base_url)
+        save_directory = os.path.join(home_directory, ".inspector", "js_files", base_url)
         os.makedirs(save_directory, exist_ok=True)
         return save_directory
 
