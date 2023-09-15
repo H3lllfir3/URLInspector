@@ -5,7 +5,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from cli.queries import UrlData
-from cli.url_sentry import URL
+from cli.url_sentry import URLInspector
 from bot import DiscordWebhook
 
 from rich import print
@@ -41,7 +41,7 @@ def main():
 def process_record(record):
     """Process a single URL record."""
     data = {i: j for i, j in record.items() if j is not None}
-    domain = URL(data['url'])
+    domain = URLInspector(data['url'])
     url_data = UrlData.get(data['url'])
 
     if url_data:
