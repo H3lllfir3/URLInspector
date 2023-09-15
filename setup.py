@@ -19,7 +19,7 @@ class CustomInstallCommand(install):
         cron = CronTab(user=True)
         python_path = "/usr/bin/python3"  # Change this to the path of your Python executable
         job = cron.new(command=f'{python_path} {script_path}')
-        job.hour.every(1)  # Replace 1 with the desired interval in hours (e.g., 2, 3, etc.)
+        job.setall('0 * * * *') 
         cron.write()
 
 
