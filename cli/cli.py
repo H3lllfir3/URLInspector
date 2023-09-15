@@ -44,7 +44,7 @@ def main():
     if args.set_hook:
         webhook_url = args.set_hook.strip()
 
-        ENV_DIR = os.path.join(os.path.expanduser("~"), '.urlinspector')
+        ENV_DIR = os.path.join(os.path.expanduser("~"), '.inspector')
         ENV_FILE = '.env'
         ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)
 

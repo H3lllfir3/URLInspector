@@ -8,7 +8,7 @@ from datetime import datetime
 from .database import check_and_create_table
 
 
-DB_DIR = os.path.join(os.path.expanduser("~"), '.urlinspector')
+DB_DIR = os.path.join(os.path.expanduser("~"), '.inspector')
 
 # Set the absolute path for the database file
 DB_FILE = 'data.db'
