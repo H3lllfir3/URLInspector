@@ -9,7 +9,7 @@ import tldextract
 
 
 
-class URL:
+class URLInspector:
     def __init__(self, url):
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
