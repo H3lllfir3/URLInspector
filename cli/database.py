@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 
-DB_DIR = os.path.join(os.path.expanduser("~"), '.url_sentry')
+DB_DIR = os.path.join(os.path.expanduser("~"), '.inspector')
 
 os.makedirs(DB_DIR, exist_ok=True)
 
