@@ -24,7 +24,7 @@ class CustomInstallCommand(install):
 
 
 setup(
-    name='URL_sentry',
+    name='inspector',
     version='0.1',
     packages=['cli'],
     install_requires=[
@@ -37,7 +37,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'url-sentry=cli.cli:main',
+            'inspector=cli.cli:main',
         ],
     },
     cmdclass={
