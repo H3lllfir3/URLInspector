@@ -6,7 +6,7 @@ import logging
 import os
 
 from cli.queries import UrlData
-from cli.url_sentry import URL
+from cli.url_sentry import URLInspector
 
 from rich import print
 
@@ -62,18 +62,18 @@ def main():
                 url_data = UrlData.get(url)
                 if url_data:
                     if args.status_code:
-                        url_data.status_code = URL(url).check_status_code()
+                        url_data.status_code = URLInspector(url).check_status_code()
                     if args.title:
-                        url_data.title = URL(url).check_title()
+                        url_data.title = URLInspector(url).check_title()
                     if args.js:
-                        url_data.js_hash = URL(url).check_js_files()
+                        url_data.js_hash = URLInspector(url).check_js_files()
                     if args.content_length:
-                        url_data.content_length = URL(url).check_content_length()
+                        url_data.content_length = URLInspector(url).check_content_length()
                     url_data.update()
                     print(f'Data for URL {url} updated successfully!')
                 else:
                     url_data = UrlData(url=url)
-                    domain = URL(url)
+                    domain = URLInspector(url)
                     if args.status_code:
                         url_data.status_code = domain.check_status_code()
                     if args.title:
@@ -89,18 +89,18 @@ def main():
             url_data = UrlData.get(args.url)
             if url_data:
                 if args.status_code:
-                    url_data.status_code = URL(args.url).check_status_code()
+                    url_data.status_code = URLInspector(args.url).check_status_code()
                 if args.title:
-                    url_data.title = URL(args.url).check_title()
+                    url_data.title = URLInspector(args.url).check_title()
                 if args.js:
-                    url_data.js_hash = URL(args.url).check_js_files()
+                    url_data.js_hash = URLInspector(args.url).check_js_files()
                 if args.content_length:
-                    url_data.content_length = URL(args.url).check_content_length()
+                    url_data.content_length = URLInspector(args.url).check_content_length()
                 url_data.update()
                 print(f'Data for URL {args.url} updated successfully!')
             else:
                 url_data = UrlData(url=args.url)
-                domain = URL(args.url)
+                domain = URLInspector(args.url)
                 if args.status_code:
                     url_data.status_code = domain.check_status_code()
                 if args.title:
