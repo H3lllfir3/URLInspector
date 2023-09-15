@@ -28,7 +28,7 @@ pip install -e .
 - To set the webhook URL, use the following command:
 
 ```bash
-url-sentry --set_hook WEBHOOK-URL
+inspector --set_hook WEBHOOK-URL
 ```
 
 ### Usage
@@ -38,7 +38,7 @@ url-sentry --set_hook WEBHOOK-URL
 To add URL data, use the following command:
 
 ```bash
-url-sentry add -u <url> [options]
+inspector add -u <url> [options]
 ```
 
 Available options:
@@ -50,9 +50,9 @@ Available options:
 Examples:
 
 ```bash
-url-sentry add -u domain.tld -content-length
-url-sentry add -u domain.tld -title
-url-sentry add -u domain.tld -status-code -js
+inspector add -u domain.tld -content-length
+inspector add -u domain.tld -title
+inspector add -u domain.tld -status-code -js
 ```
 
 #### Remove URL Data
@@ -60,7 +60,7 @@ url-sentry add -u domain.tld -status-code -js
 To remove URL data, use the following command:
 
 ```bash
-url-sentry remove -u domain.tld
+inspector remove -u domain.tld
 ```
 
 #### View Logs
@@ -68,7 +68,7 @@ url-sentry remove -u domain.tld
 To view the logs, use the following command:
 
 ```bash
-url-sentry -logs
+inspector -logs
 ```
 
 #### View All Records
@@ -76,7 +76,7 @@ url-sentry -logs
 To view all URL records, use the following command:
 
 ```bash
-url-sentry -subs | jq
+inspector -subs | jq
 ```
 
 ### Contributing
