@@ -155,6 +155,9 @@ class URLInspector:
 
                         js_hashes.append(f'{js_url}|{js_hash}')
                     except requests.exceptions.RequestException as e:
-                        print(f"Error fetching JS URL '{js_url}': {e}")
+                        logging.error(f"Error fetching JS URL '{js_url}': {e}")
+
+                    except Exception as e:
+                        logging.error(f"Unexpected error for JS URL '{js_url}': {e}")
 
         return ','.join(js_hashes)
