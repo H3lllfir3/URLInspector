@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 import requests
 import tldextract
+import validators
 from bs4 import BeautifulSoup
 
 
@@ -47,6 +48,10 @@ class URLInspector:
     SCHEME_HTTPS = 'https://'
 
     def __init__(self, url):
+
+        if not validators.url(url):
+            raise ValueError('Invalid URL provided')
+
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
         self.response = self.fetch_response()
