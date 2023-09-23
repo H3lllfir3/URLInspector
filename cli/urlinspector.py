@@ -10,10 +10,38 @@ import tldextract
 
 
 class URLInspector:
+    """
+    URLInspector is a class for inspecting and analyzing web URLs.
+
+    This class provides methods for retrieving and analyzing web content, including
+    checking the status code, content length, title. Additionally, it can identify 
+    and download JavaScript (JS) files referenced in the web page and calculate 
+    their MD5 hashes to find changes over the time.
+
+    Attributes:
+        url (str): The URL to inspect and analyze.
+        save_directory (str): The directory where downloaded JS files are saved.
+            The directory is created based on the URL's hostname.
+
+    Methods:
+        check_status_code(): Retrieve and return the HTTP status code of the URL's response.
+        check_content_length(): Calculate and return the content length of the URL's response.
+        check_title(): Extract and return the title from the HTML content of the URL's response.
+        check_word_in_body(word): Check if a specified word is present in the body of the URL's response.
+        check_js_files(): Identify, download, and hash JS files referenced in the web page.
+
+    Usage Example:
+        url_inspector = URLInspector("https://example.com")
+        status_code = url_inspector.check_status_code()
+        content_length = url_inspector.check_content_length()
+        title = url_inspector.check_title()
+        is_word_present = url_inspector.check_word_in_body("Python")
+        js_hashes = url_inspector.check_js_files()
+    """
     def __init__(self, url):
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
-        self.BACK_LIST = [
+        self.BLACK_LIST = [
             'jquery',
         ]
         self.response = self.fetch_response()
@@ -114,7 +142,7 @@ class URLInspector:
         js_hashes = []
         with requests.Session() as session:
             for js_url in base_domain_js_urls:
-                if not any(blacklisted in js_url for blacklisted in self.BACK_LIST):
+                if not any(blacklisted in js_url for blacklisted in self.BLACK_LIST):
                     try:
                         js_response = session.get(js_url)
                         js_response.raise_for_status()  # Check for HTTP status code other than 200
