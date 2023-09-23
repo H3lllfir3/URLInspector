@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 import hashlib
+import logging
 import os
-from urllib.parse import urlparse, urljoin
 import re
+from urllib.parse import urljoin
+from urllib.parse import urlparse
 
 import requests
-from bs4 import BeautifulSoup
 import tldextract
-
+from bs4 import BeautifulSoup
 
 
 class URLInspector:
@@ -14,8 +17,8 @@ class URLInspector:
     URLInspector is a class for inspecting and analyzing web URLs.
 
     This class provides methods for retrieving and analyzing web content, including
-    checking the status code, content length, title. Additionally, it can identify 
-    and download JavaScript (JS) files referenced in the web page and calculate 
+    checking the status code, content length, title. Additionally, it can identify
+    and download JavaScript (JS) files referenced in the web page and calculate
     their MD5 hashes to find changes over the time.
 
     Attributes:
@@ -38,6 +41,7 @@ class URLInspector:
         is_word_present = url_inspector.check_word_in_body("Python")
         js_hashes = url_inspector.check_js_files()
     """
+
     def __init__(self, url):
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
@@ -54,9 +58,9 @@ class URLInspector:
         scheme = parsed_url.scheme
 
         if not scheme:
-            return "https://" + parsed_url.netloc + parsed_url.path.rstrip("/")
+            return 'https://' + parsed_url.netloc + parsed_url.path.rstrip('/')
 
-        return url.rstrip("/")
+        return url.rstrip('/')
 
     def is_relative_url(self, url):
         """
@@ -69,19 +73,26 @@ class URLInspector:
         extracted = tldextract.extract(url)
         return extracted.domain
 
-    def create_save_directory(self):
+    def create_save_directory(self, custom_save_directory=None) -> str:
         """
         Create a directory to save JS files based on the URL's hostname.
         """
-        base_url = urlparse(self.url).hostname
-        home_directory = os.path.expanduser("~")
-        save_directory = os.path.join(home_directory, ".inspector", "js_files", base_url)
-        os.makedirs(save_directory, exist_ok=True)
-        return save_directory
+        if custom_save_directory:
+
+            return custom_save_directory
+        else:
+            base_url = urlparse(self.url).hostname
+            home_directory = os.path.expanduser('~')
+            save_directory = os.path.join(
+                home_directory, '.inspector', 'js_files', base_url,
+            )
+            os.makedirs(save_directory, exist_ok=True)
+            return save_directory
 
     def fetch_response(self):
         """
-        Fetch the URL's response, handling SSL errors by retrying with certificate verification disabled.
+        Fetch the URL's response, handling SSL errors by
+        retrying with certificate verification disabled.
         """
         try:
             response = requests.get(self.url)
@@ -122,22 +133,33 @@ class URLInspector:
         base_url = urlparse(self.url).hostname
 
         soup = BeautifulSoup(self.response.text, 'html.parser')
-        js_tags = [script['src'] for script in soup.find_all('script', src=True)]
+        js_tags = [
+            script['src']
+            for script in soup.find_all('script', src=True)
+        ]
 
-        js_modulepreload_links = soup.find_all('link', rel='modulepreload', href=re.compile(r'\.js$'))
+        js_modulepreload_links = soup.find_all(
+            'link', rel='modulepreload', href=re.compile(r'\.js$'),
+        )
         js_links = [link['href'] for link in js_modulepreload_links]
 
         all_js = js_links + js_tags
 
-        base_url_path = f"{self.url}/"
+        base_url_path = f'{self.url}/'
         site_name = self.extract_site_name(self.url)
         base_domain_js_urls = [
-            urljoin(base_url_path, js_url) if self.is_relative_url(js_url) else js_url
+            urljoin(base_url_path, js_url) if self.is_relative_url(
+                js_url,
+            ) else js_url
             for js_url in all_js
             if self.is_relative_url(js_url) or site_name in js_url
         ]
-        
-        base_domain_js_urls = [url.replace("//", "https://") if url.startswith("//") else url for url in base_domain_js_urls]
+
+        base_domain_js_urls = [
+            url.replace(
+                '//', 'https://',
+            ) if url.startswith('//') else url for url in base_domain_js_urls
+        ]
 
         js_hashes = []
         with requests.Session() as session:
@@ -147,8 +169,9 @@ class URLInspector:
                         js_response = session.get(js_url)
                         js_response.raise_for_status()  # Check for HTTP status code other than 200
                         js_hash = hashlib.md5(js_response.content).hexdigest()
-                        js_filename = os.path.basename(js_url)
-                        js_file_path = os.path.join(self.save_directory, f"{base_url}-{js_hash}.js")
+                        js_file_path = os.path.join(
+                            self.save_directory, f'{base_url}-{js_hash}.js',
+                        )
 
                         with open(js_file_path, 'wb') as file:
                             file.write(js_response.content)
@@ -158,6 +181,8 @@ class URLInspector:
                         logging.error(f"Error fetching JS URL '{js_url}': {e}")
 
                     except Exception as e:
-                        logging.error(f"Unexpected error for JS URL '{js_url}': {e}")
+                        logging.error(
+                            f"Unexpected error for JS URL '{js_url}': {e}",
+                        )
 
         return ','.join(js_hashes)
