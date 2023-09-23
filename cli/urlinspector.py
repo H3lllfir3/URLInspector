@@ -41,13 +41,14 @@ class URLInspector:
         is_word_present = url_inspector.check_word_in_body("Python")
         js_hashes = url_inspector.check_js_files()
     """
+    INSPECTOR_DIR = os.path.join(os.path.expanduser('~'), '.inspector')
+    BLACKLIST = ['jquery']
+    JS_FILES_DIR = 'js_files'
+    SCHEME_HTTPS = 'https://'
 
     def __init__(self, url):
         self.url = self.add_scheme(url)
         self.save_directory = self.create_save_directory()
-        self.BLACK_LIST = [
-            'jquery',
-        ]
         self.response = self.fetch_response()
 
     def add_scheme(self, url):
@@ -58,7 +59,7 @@ class URLInspector:
         scheme = parsed_url.scheme
 
         if not scheme:
-            return 'https://' + parsed_url.netloc + parsed_url.path.rstrip('/')
+            return self.SCHEME_HTTPS + parsed_url.netloc + parsed_url.path.rstrip('/')
 
         return url.rstrip('/')
 
@@ -82,9 +83,8 @@ class URLInspector:
             return custom_save_directory
         else:
             base_url = urlparse(self.url).hostname
-            home_directory = os.path.expanduser('~')
             save_directory = os.path.join(
-                home_directory, '.inspector', 'js_files', base_url,
+                self.INSPECTOR_DIR, self.JS_FILES_DIR, base_url,
             )
             os.makedirs(save_directory, exist_ok=True)
             return save_directory
@@ -157,14 +157,14 @@ class URLInspector:
 
         base_domain_js_urls = [
             url.replace(
-                '//', 'https://',
+                '//', self.SCHEME_HTTPS,
             ) if url.startswith('//') else url for url in base_domain_js_urls
         ]
 
         js_hashes = []
         with requests.Session() as session:
             for js_url in base_domain_js_urls:
-                if not any(blacklisted in js_url for blacklisted in self.BLACK_LIST):
+                if not any(blacklisted in js_url for blacklisted in self.BLACKLIST):
                     try:
                         js_response = session.get(js_url)
                         js_response.raise_for_status()  # Check for HTTP status code other than 200
