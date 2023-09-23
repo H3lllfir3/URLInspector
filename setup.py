@@ -28,12 +28,12 @@ setup(
     version='0.1',
     packages=['cli'],
     install_requires=[
-        'rich',
-        'requests',
-        'python-dotenv',
-        'python-crontab',
-        'tldextract',
-        'beautifulsoup4',
+        'rich==13.5.3',
+        'requests==2.31.0',
+        'python-dotenv==1.0.0',
+        'python-crontab==3.0.0',
+        'tldextract==3.6.0',
+        'beautifulsoup4==4.12.2',
     ],
     entry_points={
         'console_scripts': [

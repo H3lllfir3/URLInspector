@@ -1,0 +1,6 @@
+requests==2.31.0
+python-dotenv==1.0.0
+rich==13.5.3
+python-crontab==3.0.0
+tldextract==3.6.0
+beautifulsoup4==4.12.2
