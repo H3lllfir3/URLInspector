@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from cli.urlinspector import URLInspector
+from inspector.urlinspector import URLInspector
 
 
 class TestURLInspector(unittest.TestCase):
