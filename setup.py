@@ -41,7 +41,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'inspector=inspector.cli:main',
+            'inspector=src.inspector.cli:main',
         ],
     },
     cmdclass={
