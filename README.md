@@ -1,6 +1,6 @@
 # URL Inspector - URL Monitoring and Management CLI
 
-- "URL Inspector" is a Python CLI tool for monitoring URL data, including status code, title, JS files, and content length.
+- "URL Inspector" is a Python CLI tool for monitoring website data, including status code, title, JS files, and content length.
 - It allows users to add, remove, and view URL data in a simple and convenient way.
 
 ### Installation
