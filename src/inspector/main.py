@@ -7,8 +7,8 @@ from datetime import datetime
 
 from bot import DiscordWebhook
 from dotenv import load_dotenv
-from inspector.queries import UrlData
-from inspector.urlinspector import URLInspector
+from queries import UrlData
+from urlinspector import URLInspector
 
 
 ENV_DIR = os.path.join(os.path.expanduser('~'), '.urlinspector')
