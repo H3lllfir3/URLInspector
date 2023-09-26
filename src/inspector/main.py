@@ -5,10 +5,11 @@ import logging
 import os
 from datetime import datetime
 
-from discord_client import DiscordWebhook
 from dotenv import load_dotenv
-from queries import UrlData
-from urlinspector import URLInspector
+
+from .discord_client import DiscordWebhook
+from .queries import UrlData
+from .urlinspector import URLInspector
 
 
 ENV_DIR = os.path.join(os.path.expanduser('~'), '.urlinspector')
