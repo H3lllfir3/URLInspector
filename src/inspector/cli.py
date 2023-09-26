@@ -5,9 +5,9 @@ import argparse
 import logging
 import os
 
-from inspector.queries import UrlData
-from inspector.urlinspector import URLInspector
+from queries import UrlData
 from rich import print
+from urlinspector import URLInspector
 
 
 def main():
