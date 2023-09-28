@@ -7,7 +7,7 @@ import os
 
 from rich import print
 
-from .queries import UrlData
+from .models import UrlData
 from .urlinspector import URLInspector
 
 
