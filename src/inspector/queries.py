@@ -1,4 +1,7 @@
 import logging
+from typing import Optional
+
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from .models import UrlData
 
@@ -14,7 +17,7 @@ class UrlDataQueries:
 
         self.session = session
 
-    def add(self, url: str) -> UrlData:
+    def add(self, url_data: UrlData) -> UrlData:
         """
         Create new UrlData record.
         Args:
@@ -24,13 +27,12 @@ class UrlDataQueries:
             UrlData: New UrlData object added to database
         """
 
-        new_url = UrlData(url=url)
-        self.session.add(new_url)
+        self.session.add(url_data)
         self.session.commit()
-        logger.info(f'Added new UrlData {new_url.id}')
-        return new_url
+        logger.info(f'Added new UrlData {url_data.id}')
+        return url_data
 
-    def get(self, url: str) -> UrlData | None:
+    def get(self, url: str) -> Optional[DeclarativeMeta]:
         """
         Get UrlData record by URL.
         Args:
