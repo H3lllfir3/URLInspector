@@ -19,12 +19,13 @@ class UrlDataQueries:
 
     def add(self, url_data: UrlData) -> UrlData:
         """
-        Create new UrlData record.
+        Create a new UrlData record.
+
         Args:
-            url (str): URL for record
+            url_data (UrlData): The UrlData object to be added to the database.
 
         Returns:
-            UrlData: New UrlData object added to database
+            UrlData: The newly added UrlData object.
         """
 
         self.session.add(url_data)
@@ -34,25 +35,27 @@ class UrlDataQueries:
 
     def get(self, url: str) -> Optional[DeclarativeMeta]:
         """
-        Get UrlData record by URL.
+        Retrieve a UrlData record by URL.
+
         Args:
-            url (str): URL of record
+            url (str): The URL of the record to retrieve.
 
         Returns:
-            UrlData: Query result or None if not found
+            UrlData: The retrieved UrlData object, or None if not found.
         """
 
         return self.session.query(UrlData).filter_by(url=url).first()
 
     def update(self, url: str, **kwargs) -> Optional[DeclarativeMeta]:
         """
-        Update existing UrlData record.
+        Update an existing UrlData record.
+
         Args:
-            url (str): URL of record to update
-            **kwargs: Attributes to update and values
+            url (str): The URL of the record to update.
+            **kwargs: Keyword arguments representing attributes to update and their new values.
 
         Returns:
-            UrlData: Updated UrlData object
+            UrlData: The updated UrlData object, or None if the record is not found.
         """
 
         url_data = self.get(url)
@@ -65,12 +68,12 @@ class UrlDataQueries:
 
     def delete(self, url: str) -> bool:
         """
-        Delete UrlData record.
+        Delete a UrlData record.
         Args:
-            url (str): URL of record to delete
+            url (str): The URL of the record to delete.
 
         Returns:
-            bool: True if deleted, False if not found
+            bool: True if the record was deleted, False if it was not found.
         """
 
         url_data = self.get(url)
@@ -81,11 +84,11 @@ class UrlDataQueries:
             return True
         return False
 
-    def get_all(self) -> list[UrlData]:
+    def get_all(self) -> list[DeclarativeMeta]:
         """
-        Get all UrlData records.
+        Retrive all UrlData records from the database.
         Returns:
-            list: List of all UrlData objects
+            list[UrlData]: A list of all UrlData objects in the database.
         """
 
         return self.session.query(UrlData).all()
