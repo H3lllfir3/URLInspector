@@ -1,18 +1,20 @@
-from sqlalchemy.orm import sessionmaker
+import logging
 
-from .models import engine
 from .models import UrlData
+
+
+logger = logging.getLogger(__name__)
 
 
 class UrlDataQueries:
     """Class for querying UrlData database model."""
 
-    def __init__(self) -> None:
+    def __init__(self, session) -> None:
         """Initialize session for queries."""
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
 
-    def create(self, url: str) -> UrlData:
+        self.session = session
+
+    def add(self, url: str) -> UrlData:
         """
         Create new UrlData record.
         Args:
@@ -25,9 +27,10 @@ class UrlDataQueries:
         new_url = UrlData(url=url)
         self.session.add(new_url)
         self.session.commit()
+        logger.info(f'Added new UrlData {new_url.id}')
         return new_url
 
-    def read(self, url: str) -> UrlData | None:
+    def get(self, url: str) -> UrlData | None:
         """
         Get UrlData record by URL.
         Args:
@@ -50,11 +53,12 @@ class UrlDataQueries:
             UrlData: Updated UrlData object
         """
 
-        url_data = self.read(url)
+        url_data = self.get(url)
         if url_data:
             for attr, value in kwargs.items():
                 setattr(url_data, attr, value)
             self.session.commit()
+            logger.info(f'Updated UrlData {url_data.id}')
             return url_data
 
     def delete(self, url: str) -> bool:
@@ -67,13 +71,13 @@ class UrlDataQueries:
             bool: True if deleted, False if not found
         """
 
-        url_data = self.read(url)
+        url_data = self.get(url)
         if url_data:
             self.session.delete(url_data)
             self.session.commit()
+            logger.info(f'Deleted UrlData {url_data.id}')
             return True
-        else:
-            return False
+        return False
 
     def get_all(self) -> list[UrlData]:
         """
