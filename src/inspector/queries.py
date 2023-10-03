@@ -44,7 +44,7 @@ class UrlDataQueries:
 
         return self.session.query(UrlData).filter_by(url=url).first()
 
-    def update(self, url: str, **kwargs) -> UrlData | None:
+    def update(self, url: str, **kwargs) -> Optional[DeclarativeMeta]:
         """
         Update existing UrlData record.
         Args:
