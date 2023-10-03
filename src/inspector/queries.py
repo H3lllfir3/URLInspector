@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from typing import Optional
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -84,7 +85,7 @@ class UrlDataQueries:
             return True
         return False
 
-    def get_all(self) -> list[DeclarativeMeta]:
+    def get_all(self) -> List[DeclarativeMeta]:
         """
         Retrive all UrlData records from the database.
         Returns:
