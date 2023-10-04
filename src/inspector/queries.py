@@ -45,7 +45,7 @@ class UrlDataQueries:
             UrlData: The retrieved UrlData object, or None if not found.
         """
 
-        return self.session.query(UrlData).filter_by(url=url).first()
+        return self.session.query(UrlData).filter(UrlData.url == url).first()
 
     def update(self, url: str, **kwargs) -> Optional[DeclarativeMeta]:
         """
