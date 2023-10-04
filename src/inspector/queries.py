@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import List
 from typing import Optional
@@ -47,25 +48,23 @@ class UrlDataQueries:
 
         return self.session.query(UrlData).filter(UrlData.url == url).first()
 
-    def update(self, url: str, **kwargs) -> Optional[DeclarativeMeta]:
+    def update(self, url_data: DeclarativeMeta) -> Optional[DeclarativeMeta]:
         """
         Update an existing UrlData record.
 
         Args:
-            url (str): The URL of the record to update.
-            **kwargs: Keyword arguments representing attributes to update and their new values.
+            url_data (DeclarativeMeta): The UrlData object to update.
 
         Returns:
-            UrlData: The updated UrlData object, or None if the record is not found.
+            DeclarativeMeta: The updated UrlData object.
         """
 
-        url_data = self.get(url)
-        if url_data:
-            for attr, value in kwargs.items():
-                setattr(url_data, attr, value)
-            self.session.commit()
-            logger.info(f'Updated UrlData {url_data.id}')
-            return url_data
+        self.session.add(url_data)
+        self.session.commit()
+
+        logger.info(f'Updated UrlData {url_data.id}')
+
+        return url_data
 
     def delete(self, url: str) -> bool:
         """
@@ -92,4 +91,17 @@ class UrlDataQueries:
             list[UrlData]: A list of all UrlData objects in the database.
         """
 
-        return self.session.query(UrlData).all()
+        url_data = self.session.query(UrlData).all()
+
+        data = []
+        for u in url_data:
+            data.append({
+                'id': u.id,
+                'url': u.url,
+                'title': u.title,
+                'status_code': u.status_code,
+                'js_hash': u.js_hash,
+                'content_length': u.content_length,
+                'added_time': u.added_time,
+            })
+        return json.dumps(data)
