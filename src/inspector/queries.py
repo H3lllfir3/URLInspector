@@ -87,6 +87,7 @@ class UrlDataQueries:
     def get_all(self) -> List[DeclarativeMeta]:
         """
         Retrive all UrlData records from the database.
+
         Returns:
             list[UrlData]: A list of all UrlData objects in the database.
         """
@@ -102,6 +103,6 @@ class UrlDataQueries:
                 'status_code': u.status_code,
                 'js_hash': u.js_hash,
                 'content_length': u.content_length,
-                'added_time': u.added_time,
+                'added_time': str(u.added_time),
             })
         return json.dumps(data)
