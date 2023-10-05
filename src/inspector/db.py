@@ -44,4 +44,4 @@ def get_session(db_url: str) -> sessionmaker:
     """
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
-    return Session
+    return Session()
