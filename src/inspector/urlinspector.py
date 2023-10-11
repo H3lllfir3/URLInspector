@@ -11,6 +11,9 @@ import validators
 from bs4 import BeautifulSoup
 
 from .config import BASE_DIR
+from .config import get_logger
+
+logger = get_logger()
 
 
 class URLInspector:

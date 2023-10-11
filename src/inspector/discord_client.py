@@ -1,8 +1,10 @@
-from __future__ import annotations
-
 import json
 
 import requests
+
+from .config import get_logger
+
+logger = get_logger()
 
 
 class DiscordWebhook:
@@ -22,9 +24,6 @@ class DiscordWebhook:
         )
 
         if response.status_code == 204:
-            print('Message sent successfully.')
+            logger.info('Message sent successfully.')
         else:
-            print(
-                f'Failed to send message. Status code: {response.status_code}',
-            )
-            print(response.text)
+            logger.error(f'Failed to send message. Status code: {response.status_code}')

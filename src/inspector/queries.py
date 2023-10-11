@@ -1,14 +1,14 @@
 import json
-import logging
 from typing import List
 from typing import Optional
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+from .config import get_logger
 from .models import UrlData
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 
 class UrlDataQueries:

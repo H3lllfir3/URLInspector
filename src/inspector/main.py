@@ -1,33 +1,15 @@
-from __future__ import annotations
-
 import json
-import logging
 import os
 from datetime import datetime
 
-from dotenv import load_dotenv
-
+from .config import get_logger
 from .discord_client import DiscordWebhook
 from .queries import UrlData
 from .urlinspector import URLInspector
 
 
-ENV_DIR = os.path.join(os.path.expanduser('~'), '.urlinspector')
-LOG_FILE = os.path.join(ENV_DIR, 'log.txt')
-
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-)
-
 messages = []
-
-ENV_DIR = os.path.join(os.path.expanduser('~'), '.urlinspector')
-ENV_FILE = '.env'
-# Replace with the actual path to your .env file
-ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)
-load_dotenv(ENV_PATH)
+logger = get_logger()
 
 
 def main():
@@ -65,7 +47,7 @@ def check_status_code_change(data, domain, url_data):
             messages.append(
                 f"Status code changed for {data['url']} from {url_data.status_code} to {status_code}",
             )
-            logging.warning(f"Status code changed for {data['url']}")
+            logger.warning(f"Status code changed for {data['url']}")
             url_data.status_code = status_code
 
 
@@ -77,7 +59,7 @@ def check_title_change(data, domain, url_data):
             messages.append(
                 f"Title changed for {data['url']} from {url_data.title} to {title}",
             )
-            logging.warning(f"Title changed for {data['url']}")
+            logger.warning(f"Title changed for {data['url']}")
             url_data.title = title
 
 
@@ -87,7 +69,7 @@ def check_body_word(data, domain):
         messages.append(
             f"Word '{data['body']}' found in body on {data['url']}",
         )
-        logging.warning(
+        logger.warning(
             f"Word '{data['body']}' found in body for {data['url']}",
         )
 
@@ -100,7 +82,7 @@ def check_content_length_change(data, domain, url_data):
             messages.append(
                 f"Content length changed for {data['url']} from {url_data.content_length} to {content_length}",
             )
-            logging.warning(f"Content length changed for {data['url']}")
+            logger.warning(f"Content length changed for {data['url']}")
             url_data.content_length = content_length
 
 
@@ -121,7 +103,7 @@ def check_js_hash_change(data, domain, url_data):
         for url, old_hash in old_url_hash_dict.items():
             if url in new_url_hash_dict and old_hash != new_url_hash_dict[url]:
                 messages.append(f'JS file for {url} changed.')
-                logging.info(
+                logger.info(
                     f'URL: {url}, Hash: {old_hash} -> {new_url_hash_dict[url]}',
                 )
                 old_url_hash_dict[url] = new_url_hash_dict[url]
@@ -129,16 +111,16 @@ def check_js_hash_change(data, domain, url_data):
         added_items = set(new_url_hash_dict.keys()) - \
             set(old_url_hash_dict.keys())
         if added_items:
-            logging.warning('Added items:')
+            logger.warning('Added items:')
             for key in added_items:
                 messages.append(f'JS file for {key} added.')
-                logging.warning(f'[bold green]{key} added![/bold green]')
+                logger.warning(f'[bold green]{key} added![/bold green]')
                 old_url_hash_dict[key] = new_url_hash_dict.get(key, '')
 
         removed_items = set(old_url_hash_dict.keys()) - \
             set(new_url_hash_dict.keys())
         if removed_items:
-            logging.warning('[bold red]Removed items:[/bold red]')
+            logger.warning('[bold red]Removed items:[/bold red]')
             keys_to_remove = []
             for key in removed_items:
                 msg = {
@@ -155,7 +137,7 @@ def check_js_hash_change(data, domain, url_data):
                     'attachments': [],
                 }
                 messages.append(msg)
-                logging.warning(f'URL: {key}, Hash: {old_url_hash_dict[key]}')
+                logger.warning(f'URL: {key}, Hash: {old_url_hash_dict[key]}')
                 keys_to_remove.append(key)
 
             for key in keys_to_remove:

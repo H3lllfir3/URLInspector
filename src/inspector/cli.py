@@ -1,29 +1,47 @@
-#!/usr/bin/env python
-from __future__ import annotations
-
 import argparse
-import logging
 import os
+from typing import List
+from urllib.parse import urlparse
 
 from rich import print
+from tqdm import tqdm
 
+from .config import DB_URL
+from .config import get_logger
+from .config import LOG_FILE
+from .db import get_session
 from .models import UrlData
+from .queries import UrlDataQueries
 from .urlinspector import URLInspector
+
+
+logger = get_logger()
+
+
+def validate_url(url: str) -> bool:
+    """Validate URL input"""
+    parsed = urlparse(url)
+    return bool(parsed.scheme and parsed.netloc)
+
+
+def validate_file(fil_path: str) -> bool:
+    """Validate file exists"""
+    return os.path.exists(fil_path)
+
+
+def get_urls_from_file(file_path: str) -> List[str]:
+    """Extract URLs from file"""
+    with open(file_path) as f:
+        urls = [line.strip() for line in f]
+        return [url for url in urls if validate_url(url)]
+
+
+def get_inspector(url: str) -> URLInspector:
+    return URLInspector(url)
 
 
 def main():
     """Manage URL Data monitoring using CLI."""
-    # Configure the logging
-    logging.basicConfig(
-        level=logging.WARNING,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-    )
-
-    # Create a logger for the CLI
-    cli_logger = logging.getLogger('cli_logger')
-    cli_logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler()
-    cli_logger.addHandler(console_handler)
 
     parser = argparse.ArgumentParser(description='URL Data Management')
     parser.add_argument(
@@ -49,34 +67,21 @@ def main():
         '-content-length', action='store_true',
         help='Include content length',
     )
-    parser.add_argument(
-        '-body', action='store_true',
-        help='Content of the body',
-    )
+
     parser.add_argument('-logs', action='store_true', help='Show logs')
-    parser.add_argument('--set_hook', help='Webhook URL')
 
     args = parser.parse_args()
 
-    if args.set_hook:
-        webhook_url = args.set_hook.strip()
+    # get the db session
+    session = get_session(DB_URL)
+    queries = UrlDataQueries(session)
 
-        ENV_DIR = os.path.join(os.path.expanduser('~'), '.inspector')
-        ENV_FILE = '.env'
-        ENV_PATH = os.path.join(ENV_DIR, ENV_FILE)
-
-        with open(ENV_PATH, 'w') as env_file:
-            env_file.write(f'DISCORD_WEBHOOK_URL={webhook_url}\n')
-        print('Webhook URL set successfully!')
-
-    elif args.action == 'add':
+    if args.action == 'add':
         if args.list:
-            with open(args.list) as file:
-                urls = file.readlines()
-            urls = [url.strip() for url in urls]
+            urls = get_urls_from_file(args.list)
 
-            for url in urls:
-                url_data = UrlData.get(url)
+            for url in tqdm(urls):
+                url_data = queries.get(url)
                 if url_data:
                     if args.status_code:
                         url_data.status_code = URLInspector(
@@ -90,11 +95,12 @@ def main():
                         url_data.content_length = URLInspector(
                             url,
                         ).check_content_length()
-                    url_data.update()
+
+                    queries.add(url_data)
                     print(f'Data for URL {url} updated successfully!')
                 else:
-                    url_data = UrlData(url=url)
-                    domain = URLInspector(url)
+                    url_data = queries.get(url)
+                    domain = get_inspector(url)
                     if args.status_code:
                         url_data.status_code = domain.check_status_code()
                     if args.title:
@@ -103,11 +109,12 @@ def main():
                         url_data.js_hash = domain.check_js_files()
                     if args.content_length:
                         url_data.content_length = domain.check_content_length()
-                    url_data.save()
+
+                    queries.add(url_data)
                     print(f'Data for URL {url} added successfully!')
 
         elif args.url:
-            url_data = UrlData.get(args.url)
+            url_data = queries.get(args.url)
             if url_data:
                 if args.status_code:
                     url_data.status_code = URLInspector(
@@ -121,7 +128,8 @@ def main():
                     url_data.content_length = URLInspector(
                         args.url,
                     ).check_content_length()
-                url_data.update()
+
+                queries.update(url_data)
                 print(f'Data for URL {args.url} updated successfully!')
             else:
                 url_data = UrlData(url=args.url)
@@ -134,29 +142,29 @@ def main():
                     url_data.js_hash = domain.check_js_files()
                 if args.content_length:
                     url_data.content_length = domain.check_content_length()
-                url_data.save()
+
+                queries.add(url_data)
                 print(f'Data for URL {args.url} added successfully!')
         else:
             print("Error: Please specify either a single URL using '-u' or a file containing a list of URLs using '-l'.")
 
     elif args.action == 'remove':
         if args.url:
-            url_data = UrlData.get(args.url)
+            url_data = queries.delete(args.url)
             if url_data:
-                url_data.remove()
+
                 print(f'Data for URL {args.url} removed successfully!')
             else:
                 print(f'Data for URL {args.url} not found!')
         else:
             print("Error: Please specify a URL using '-u' to remove its data.")
 
-    # Additional functionality for getting all records
     elif args.subs:
-        all_records_json = UrlData.get_all()
+        all_records_json = queries.get_all()
         print(all_records_json)
 
     elif args.logs:
-        with open('log.txt') as file:
+        with open(LOG_FILE) as file:
             data = file.readlines()
             for line in data:
                 print(line.strip())
