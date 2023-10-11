@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import hashlib
 import logging
 import os
@@ -11,6 +9,8 @@ import requests
 import tldextract
 import validators
 from bs4 import BeautifulSoup
+
+from .config import BASE_DIR
 
 
 class URLInspector:
@@ -42,7 +42,7 @@ class URLInspector:
         is_word_present = url_inspector.check_word_in_body("Python")
         js_hashes = url_inspector.check_js_files()
     """
-    INSPECTOR_DIR = os.path.join(os.path.expanduser('~'), '.inspector')
+    INSPECTOR_DIR = BASE_DIR
     BLACKLIST = ['jquery']
     JS_FILES_DIR = 'js_files'
     SCHEME_HTTPS = 'https://'
