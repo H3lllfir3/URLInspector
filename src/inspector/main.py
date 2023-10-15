@@ -2,10 +2,11 @@ import json
 import os
 from datetime import datetime
 
-from .config import get_logger
-from .discord_client import DiscordWebhook
-from .queries import UrlData
-from .urlinspector import URLInspector
+from inspector.config import get_logger
+from inspector.discord_client import DiscordWebhook
+from inspector.models import UrlData
+from inspector.queries import UrlDataQueries
+from inspector.urlinspector import URLInspector
 
 
 messages = []
@@ -14,7 +15,7 @@ logger = get_logger()
 
 def main():
 
-    all_records_json = json.loads(UrlData.get_all())
+    all_records_json = json.loads(UrlDataQueries.get_all())
 
     for record in all_records_json:
         process_record(record)
