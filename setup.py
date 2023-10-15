@@ -1,9 +1,14 @@
-from __future__ import annotations
-
 import os
+import sys
 
 from setuptools import setup
 from setuptools.command.install import install
+
+from src.inspector.config import DB_URL
+from src.inspector.db import create_db
+
+
+create_db(DB_URL)
 
 
 class CustomInstallCommand(install):
@@ -14,13 +19,13 @@ class CustomInstallCommand(install):
         from crontab import CronTab
 
         # Get the path of main.py relative to the setup.py file
-        script_path = os.path.join(os.path.dirname(__file__), 'main.py')
+        script_path = os.path.join(os.getcwd(), 'src/inspector/main.py')
         if not os.path.isfile(script_path):
             raise FileNotFoundError(f"main.py not found at '{script_path}'")
 
         cron = CronTab(user=True)
-        # Change this to the path of your Python executable
-        python_path = '/usr/bin/python3'
+
+        python_path = sys.executable
         job = cron.new(command=f'{python_path} {script_path}')
         job.setall('0 * * * *')
         cron.write()
@@ -29,19 +34,19 @@ class CustomInstallCommand(install):
 setup(
     name='inspector',
     version='0.1',
-    packages=['inspector'],
+    packages=['src.inspector'],
     install_requires=[
-        'rich==13.5.3',
-        'requests==2.31.0',
-        'python-dotenv==1.0.0',
-        'python-crontab==3.0.0',
-        'tldextract==3.6.0',
-        'beautifulsoup4==4.12.2',
-        'validators==0.22.0',
+        'rich>=13.5.3',
+        'requests>=2.31.0',
+        'python-crontab>=3.0.0',
+        'tldextract>=3.6.0',
+        'beautifulsoup4>=4.12.2',
+        'validators>=0.22.0',
+        'alembic>=1.12.0',
     ],
     entry_points={
         'console_scripts': [
-            'inspector=src.inspector.cli:main',
+            'inspector=src.inspector.cli:cli',
         ],
     },
     cmdclass={
