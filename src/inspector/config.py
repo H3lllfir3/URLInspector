@@ -4,7 +4,7 @@ from pathlib import Path
 
 HOME = Path.home()
 BASE_DIR = HOME / '.inspector'
-DB_URL = f'sqlite:///{BASE_DIR}/data.db'
+DB_URL = 'sqlite:///data.db'
 LOG_FILE = BASE_DIR / 'app.log'
 
 if not BASE_DIR.exists():
@@ -13,7 +13,7 @@ if not BASE_DIR.exists():
 
 def get_logger():
 
-    logger = logging.getLogger('myapp')
+    logger = logging.getLogger('inspector')
     logger.setLevel(logging.INFO)
 
     file_handler = logging.FileHandler(LOG_FILE)
