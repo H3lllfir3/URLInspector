@@ -1,14 +1,13 @@
-import logging
-
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from .config import get_logger
 from .models import Base
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 
 def create_db(db_url: str) -> None:
