@@ -18,12 +18,15 @@ def create_db(db_url: str) -> None:
       db_url: Database URL
     """
     engine = create_engine(db_url)
+    connection = engine.connect()
 
-    if not engine.dialect.has_table(engine, 'url_data'):
+    if not engine.dialect.has_table(connection, 'url_data'):
         logger.info('Creating tables')
         Base.metadata.create_all(engine)
     else:
         logger.info('Tables already present')
+
+    connection.close()
 
 
 def run_migrations(alembic_ini: str) -> None:

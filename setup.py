@@ -1,9 +1,14 @@
-from __future__ import annotations
-
-import os
+import sys
+from pathlib import Path
 
 from setuptools import setup
 from setuptools.command.install import install
+
+from src.inspector.config import DB_URL
+from src.inspector.db import create_db
+
+
+create_db(DB_URL)
 
 
 class CustomInstallCommand(install):
@@ -14,13 +19,13 @@ class CustomInstallCommand(install):
         from crontab import CronTab
 
         # Get the path of main.py relative to the setup.py file
-        script_path = os.path.join(os.path.dirname(__file__), 'main.py')
-        if not os.path.isfile(script_path):
+        script_path = Path(__file__).resolve().parent.joinpath('src', 'inspector', 'main.py')
+        if not script_path.exists():
             raise FileNotFoundError(f"main.py not found at '{script_path}'")
 
         cron = CronTab(user=True)
-        # Change this to the path of your Python executable
-        python_path = '/usr/bin/python3'
+
+        python_path = sys.executable
         job = cron.new(command=f'{python_path} {script_path}')
         job.setall('0 * * * *')
         cron.write()
