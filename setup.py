@@ -1,5 +1,5 @@
-import os
 import sys
+from pathlib import Path
 
 from setuptools import setup
 from setuptools.command.install import install
@@ -19,8 +19,8 @@ class CustomInstallCommand(install):
         from crontab import CronTab
 
         # Get the path of main.py relative to the setup.py file
-        script_path = os.path.join(os.getcwd(), 'src/inspector/main.py')
-        if not os.path.isfile(script_path):
+        script_path = Path(__file__).resolve().parent.joinpath('src', 'inspector', 'main.py')
+        if not script_path.exists():
             raise FileNotFoundError(f"main.py not found at '{script_path}'")
 
         cron = CronTab(user=True)

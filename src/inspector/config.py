@@ -4,8 +4,10 @@ from pathlib import Path
 
 HOME = Path.home()
 BASE_DIR = HOME / '.inspector'
-DB_URL = 'sqlite:///data.db'
+DB_PATH = BASE_DIR / 'data.db'
+DB_URL = f'sqlite:///{DB_PATH}'
 LOG_FILE = BASE_DIR / 'app.log'
+
 
 if not BASE_DIR.exists():
     BASE_DIR.mkdir()
