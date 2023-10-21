@@ -1,11 +1,10 @@
 import sys
 from pathlib import Path
 
+from inspector.config import DB_URL
+from inspector.db import create_db
 from setuptools import setup
 from setuptools.command.install import install
-
-from src.inspector.config import DB_URL
-from src.inspector.db import create_db
 
 
 create_db(DB_URL)
@@ -46,7 +45,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'inspector=src.inspector.cli:cli',
+            'inspector=inspector.cli:main',
         ],
     },
     cmdclass={
