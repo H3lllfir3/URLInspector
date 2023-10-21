@@ -7,6 +7,7 @@ BASE_DIR = HOME / '.inspector'
 DB_PATH = BASE_DIR / 'data.db'
 DB_URL = f'sqlite:///{DB_PATH}'
 LOG_FILE = BASE_DIR / 'app.log'
+DISCORD_WEBHOOK_URL = 'PUT YOUR DISCORD WEBHOOK URL HERE'
 
 
 if not BASE_DIR.exists():

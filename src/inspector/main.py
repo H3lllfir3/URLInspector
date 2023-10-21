@@ -1,7 +1,7 @@
 import json
-import os
 from datetime import datetime
 
+from inspector.config import DISCORD_WEBHOOK_URL
 from inspector.config import get_logger
 from inspector.discord_client import DiscordWebhook
 from inspector.models import UrlData
@@ -152,7 +152,7 @@ def check_js_hash_change(data, domain, url_data):
 
 def send_discord_messages():
     """Send messages to the Discord webhook in batches."""
-    webhook_url = os.environ.get('DISCORD_WEBHOOK_URL')
+    webhook_url = DISCORD_WEBHOOK_URL
     discord = DiscordWebhook(webhook_url)
 
     for msg in messages:
