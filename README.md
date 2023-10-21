@@ -15,7 +15,8 @@ cd URLInspector
 2. Install the CLI globally:
 
 ```bash
-pip install -e .
+pip3 install -r requirements.txt
+python3 setup.py install
 ```
 
 ### Scheduling Using a Cron Job
