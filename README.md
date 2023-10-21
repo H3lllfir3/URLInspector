@@ -18,19 +18,19 @@ cd URLInspector
 pip3 install -r requirements.txt
 python3 setup.py install
 ```
+### Sending Notifications
+
+- Users can enable notifications for important events by setting up a Discord webhook URL.
+```python
+# Put the webhook URL in src/inspector/config.py as follows:
+DISCORD_WEBHOOK_URL = "your_webhook_url_here"
+```
+
 
 ### Scheduling Using a Cron Job
 
 - The script runs automatically every 1 hour.
 
-### Sending Notifications
-
-- Users can enable notifications for important events by setting up a Discord webhook URL.
-- To set the webhook URL, use the following command:
-
-```bash
-inspector --set_hook WEBHOOK-URL
-```
 
 ### Usage
 
@@ -77,7 +77,7 @@ inspector -logs
 To view all URL records, use the following command:
 
 ```bash
-inspector -subs | jq
+inspector -subs
 ```
 
 ### Contributing
@@ -87,5 +87,3 @@ inspector -subs | jq
 ### License
 
 - This project is licensed under the MIT License, allowing free use, modification, and distribution for personal and commercial purposes.
-
-Overall, the README provides clear instructions and examples on how to use the "URL Sentry" CLI tool, making it easy for users to get started and contribute to the project if they wish.
