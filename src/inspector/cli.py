@@ -54,13 +54,13 @@ def main():
         '-l', '--list', help='Path to a file containing a list of URLs',
     )
     parser.add_argument(
-        'status-code', action='store_true',
+        '-status-code', action='store_true',
         help='Include status code',
     )
-    parser.add_argument('title', action='store_true', help='Include title')
-    parser.add_argument('js', action='store_true', help='Include JS')
+    parser.add_argument('-title', action='store_true', help='Include title')
+    parser.add_argument('-js', action='store_true', help='Include JS')
     parser.add_argument(
-        'subs', action='store_true',
+        '-subs', action='store_true',
         help='Include all records',
     )
     parser.add_argument(
@@ -68,7 +68,7 @@ def main():
         help='Include content length',
     )
 
-    parser.add_argument('logs', action='store_true', help='Show logs')
+    parser.add_argument('-logs', action='store_true', help='Show logs')
 
     args = parser.parse_args()
 
