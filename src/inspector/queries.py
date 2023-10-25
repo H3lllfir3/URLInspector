@@ -1,4 +1,3 @@
-import json
 from typing import List
 from typing import Optional
 
@@ -99,10 +98,11 @@ class UrlDataQueries:
             data.append({
                 'id': u.id,
                 'url': u.url,
-                'title': u.title,
-                'status_code': u.status_code,
-                'js_hash': u.js_hash,
-                'content_length': u.content_length,
+                'title': str(u.title),
+                'status_code': str(u.status_code),
+                'js_hash': str(u.js_hash),
+                'content_length': str(u.content_length),
                 'added_time': str(u.added_time),
             })
-        return json.dumps(data)
+
+        return data
