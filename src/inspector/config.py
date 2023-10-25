@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 
@@ -7,7 +8,7 @@ BASE_DIR = HOME / '.inspector'
 DB_PATH = BASE_DIR / 'data.db'
 DB_URL = f'sqlite:///{DB_PATH}'
 LOG_FILE = BASE_DIR / 'app.log'
-DISCORD_WEBHOOK_URL = 'put your webhook url here'
+DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL') or 'put your webhook url here'
 
 
 if not BASE_DIR.exists():
