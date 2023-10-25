@@ -12,18 +12,19 @@ git clone https://github.com/H3lllfir3/URLInspector.git
 cd URLInspector
 ```
 
-2. Install the CLI globally:
-
-```bash
-pip3 install -r requirements.txt
-python3 setup.py install
-```
-### Sending Notifications
+2. Sending Notifications:
 
 - Users can enable notifications for important events by setting up a Discord webhook URL.
 ```python
 # Put the webhook URL in src/inspector/config.py as follows:
 DISCORD_WEBHOOK_URL = "your_webhook_url_here"
+```
+
+3. Install the CLI globally:
+
+```bash
+pip3 install -r requirements.txt
+python3 setup.py install
 ```
 
 
