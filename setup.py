@@ -7,9 +7,6 @@ from setuptools import setup
 from setuptools.command.install import install
 
 
-create_db(DB_URL)
-
-
 class CustomInstallCommand(install):
     def run(self):
 
@@ -52,3 +49,5 @@ setup(
         'install': CustomInstallCommand,
     },
 )
+
+create_db(DB_URL)
