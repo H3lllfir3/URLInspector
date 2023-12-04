@@ -5,7 +5,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# Set the Python path
+ENV PYTHONPATH "${PYTHONPATH}:/app"
 COPY . .
-RUN python setup.py install
+RUN python3 setup.py install
 
 ENTRYPOINT [ "inspector" ]
