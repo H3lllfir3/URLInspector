@@ -1,10 +1,10 @@
 import sys
 from pathlib import Path
 
-from inspector.config import DB_URL
-from inspector.db import create_db
 from setuptools import setup
 from setuptools.command.install import install
+# from inspector.config import DB_URL
+# from inspector.db import create_db
 
 
 class CustomInstallCommand(install):
@@ -50,4 +50,4 @@ setup(
     },
 )
 
-create_db(DB_URL)
+# create_db(DB_URL)
